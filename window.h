@@ -9,7 +9,8 @@ class window
     public:
         window();
         void drawPixel(int x,int y,color col);
-        window(char* title,int width,int height);
+        window(char* _title,int width,int height);
+        window(string _title,int _width,int _height);
         bool update();
         virtual ~window();
         void show();
@@ -30,7 +31,14 @@ class window
         void erase(int x1,int y1,int x2,int y2);
         void fillRect(int x1,int y1,int x2,int y2,color col);
         void drawBitmap(int x,int y,char* address);
+        void drawBitmap(int x,int y,string address);
         color getPixelColor(int x,int y);
+        int getWidth();
+        int getHeight();
+        string getTitle();
+        point getWindowPos();
+        void hide();
+        void resize(int _width,int _height);
     protected:
 		
     private:
@@ -41,11 +49,14 @@ class window
         HBITMAP bitm;
         HPEN pen;
         HBRUSH brush;
-    HWND hwnd;
-    MSG messages;
-    WNDCLASSEX wincl;
-    HDC hdc;
+	    string title;
+	    HWND hwnd;
+   	 	MSG messages;
+		WNDCLASSEX wincl;
+    	HDC hdc;
 
 };
 extern point XY(int x,int y);
+int getDesktopWidth();
+int getDesktopHeight();
 #endif // WINDOW_H

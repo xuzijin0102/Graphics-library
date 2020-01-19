@@ -77,9 +77,10 @@ window::window()
 SelectObject(hdc,bitm);
 height=544;
 width=255;
+title="NewWindow";
 }
 
-window::window(char* title,int _width,int _height)
+window::window(char* _title,int _width,int _height)
 {
     wincl.hInstance = GetModuleHandle(NULL) ;
     wincl.lpszClassName = _T("WindowsApp");
@@ -92,12 +93,12 @@ window::window(char* title,int _width,int _height)
     wincl.lpszMenuName = NULL;
     wincl.cbClsExtra = 0;
     wincl.cbWndExtra = 0;
-    wincl.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+    wincl.hbrBackground = (HBRUSH) COLOR_3DDKSHADOW;
     RegisterClassEx (&wincl);
     hwnd = CreateWindowEx (
            0,
            _T("WindowsApp"),         /* Classname */
-           _T(title),       /* Title Text */
+           _T(_title),       /* Title Text */
            WS_OVERLAPPEDWINDOW, /* default window */
            CW_USEDEFAULT,       /* Windows decides the position */
            CW_USEDEFAULT,       /* where the window ends up on the screen */
@@ -109,12 +110,48 @@ window::window(char* title,int _width,int _height)
            NULL                 /* No Window Creation data */
            );
            hdc=GetDC(hwnd);
-
-
-bitm=CreateCompatibleBitmap(hdc,width,height);
+    bitm=CreateCompatibleBitmap(hdc,_width,_height);
 SelectObject(hdc,bitm);
 height=_height;
 width=_width;
+title=_title;
+}
+
+window::window(string _title,int _width,int _height)
+{
+    wincl.hInstance = GetModuleHandle(NULL) ;
+    wincl.lpszClassName = _T("WindowsApp");
+    wincl.lpfnWndProc = WindowProcedure;
+    wincl.style = CS_DBLCLKS;
+    wincl.cbSize = sizeof (WNDCLASSEX);
+    wincl.hIcon = LoadIcon (NULL, IDI_APPLICATION);
+    wincl.hIconSm = LoadIcon (NULL, IDI_APPLICATION);
+    wincl.hCursor = LoadCursor (NULL, IDC_ARROW);
+    wincl.lpszMenuName = NULL;
+    wincl.cbClsExtra = 0;
+    wincl.cbWndExtra = 0;
+    wincl.hbrBackground = (HBRUSH) COLOR_3DDKSHADOW;
+    RegisterClassEx (&wincl);
+    hwnd = CreateWindowEx (
+           0,
+           _T("WindowsApp"),         /* Classname */
+           _T(_title.c_str()),       /* Title Text */
+           WS_OVERLAPPEDWINDOW, /* default window */
+           CW_USEDEFAULT,       /* Windows decides the position */
+           CW_USEDEFAULT,       /* where the window ends up on the screen */
+           _width,                 /* The programs width */
+           _height,                 /* and height in pixels */
+           HWND_DESKTOP,        /* The window is a child-window to desktop */
+           NULL,                /* No menu */
+           GetModuleHandle(NULL),       /* Program Instance handler */
+           NULL                 /* No Window Creation data */
+           );
+           hdc=GetDC(hwnd);
+    bitm=CreateCompatibleBitmap(hdc,544,375);
+SelectObject(hdc,bitm);
+height=_height;
+width=_width;
+title=_title;
 }
 
 void window::show(){
@@ -262,6 +299,44 @@ void window::drawBitmap(int x,int y,char* address){
     BitBlt(hdc, x, y, bmp.bmWidth, bmp.bmHeight, temp, 0, 0, SRCCOPY);
 }
 
+void window::drawBitmap(int x,int y,string address){
+	HDC temp;
+    temp  = CreateCompatibleDC(hdc);
+    HBITMAP hbmp;
+    BITMAP bmp;
+    hbmp = (HBITMAP)LoadImage(NULL, address.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE|LR_CREATEDIBSECTION);
+    GetObject(hbmp, sizeof(BITMAP), &bmp);
+    SelectObject(temp, hbmp);
+    BitBlt(hdc, x, y, bmp.bmWidth, bmp.bmHeight, temp, 0, 0, SRCCOPY);
+}
+
 color window::getPixelColor(int x,int y){
     return GetPixel(hdc,x,y);
+}
+
+int window::getWidth(){
+	return width;
+}
+
+int window::getHeight(){
+	return height;
+}
+
+string window::getTitle(){
+	return title;
+}
+
+void window::hide(){
+	ShowWindow(hwnd, SW_HIDE);
+}
+
+point window::getWindowPos(){
+	RECT rect;
+	GetWindowRect(hwnd,&rect);   
+	return XY(rect.left,rect.top);
+}
+
+void window::resize(int _width,int _height){
+	point p=getWindowPos();
+	MoveWindow(hwnd,p.x,p.y,_width,_height,false);
 }
