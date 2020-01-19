@@ -59,4 +59,8 @@ class window
 extern point XY(int x,int y);
 int getDesktopWidth();
 int getDesktopHeight();
+point getMousePos();
+void getMousePos(int &x,int &y);
+void setMousePos(point p);
+void setMousePos(int x,int y);
 #endif // WINDOW_H

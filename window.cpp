@@ -336,6 +336,27 @@ point window::getWindowPos(){
 	return XY(rect.left,rect.top);
 }
 
+point getMousePos(){
+	point p;
+	GetCursorPos(&p);
+	return p;
+}
+
+void getMousePos(int &x,int &y){
+	point p;
+	GetCursorPos(&p);
+	x=p.x;
+	y=p.y;
+}
+
+void setMousePos(point p){
+	SetCursorPos(p.x,p.y);
+}
+
+void setMousePos(int x,int y){
+	SetCursorPos(x,y);
+}
+
 void window::resize(int _width,int _height){
 	point p=getWindowPos();
 	MoveWindow(hwnd,p.x,p.y,_width,_height,false);
