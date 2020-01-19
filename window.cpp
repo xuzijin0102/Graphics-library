@@ -121,6 +121,9 @@ void window::show(){
     ShowWindow (hwnd, 10);
 
 }
+void window::destroy(){
+	ShowWindow(hwnd,0);
+}
 bool window::update(){
 
 
@@ -264,4 +267,45 @@ void window::drawBitmap(int x,int y,char* address){
 
 color window::getPixelColor(int x,int y){
     return GetPixel(hdc,x,y);
+}
+int window::getWidth(){
+	return width;
+}
+int window::getHeight(){
+	return height;
+}
+void window::change(char* title,int _width,int _height)
+{
+wincl.hInstance = GetModuleHandle(NULL) ;
+    wincl.lpszClassName = _T("WindowsApp");
+    wincl.lpfnWndProc = WindowProcedure;
+    wincl.style = CS_DBLCLKS;
+    wincl.cbSize = sizeof (WNDCLASSEX);
+    wincl.hIcon = LoadIcon (NULL, IDI_APPLICATION);
+    wincl.hIconSm = LoadIcon (NULL, IDI_APPLICATION);
+    wincl.hCursor = LoadCursor (NULL, IDC_ARROW);
+    wincl.lpszMenuName = NULL;
+    wincl.cbClsExtra = 0;
+    wincl.cbWndExtra = 0;
+    wincl.hbrBackground = (HBRUSH) COLOR_3DDKSHADOW;
+    RegisterClassEx (&wincl);
+    hwnd = CreateWindowEx (
+           0,
+           _T("WindowsApp"),         /* Classname */
+           _T(title),       /* Title Text */
+           WS_OVERLAPPEDWINDOW, /* default window */
+           CW_USEDEFAULT,       /* Windows decides the position */
+           CW_USEDEFAULT,       /* where the window ends up on the screen */
+           _width,                 /* The programs width */
+           _height,                 /* and height in pixels */
+           HWND_DESKTOP,        /* The window is a child-window to desktop */
+           NULL,                /* No menu */
+           GetModuleHandle(NULL),       /* Program Instance handler */
+           NULL                 /* No Window Creation data */
+           );
+           hdc=GetDC(hwnd);
+    bitm=CreateCompatibleBitmap(hdc,544,375);
+SelectObject(hdc,bitm);
+height=_height;
+width=_width;
 }

@@ -13,6 +13,7 @@ class window
         bool update();
         virtual ~window();
         void show();
+        void destroy();
         bool isQuiting();
         void drawLine(int x1,int y1,int x2,int y2,int width,color col);
         void drawEllipse(int x1,int y1,int x2,int y2,int linewidth,color line,color fill);
@@ -31,6 +32,9 @@ class window
         void fillRect(int x1,int y1,int x2,int y2,color col);
         void drawBitmap(int x,int y,char* address);
         color getPixelColor(int x,int y);
+        int getWidth();
+        int getHeight();
+        void change(char* title,int _width,int _height);
     protected:
 		
     private:
