@@ -77,9 +77,10 @@ window::window()
 SelectObject(hdc,bitm);
 height=544;
 width=255;
+title="NewWindow";
 }
 
-window::window(char* title,int _width,int _height)
+window::window(char* _title,int _width,int _height)
 {
     wincl.hInstance = GetModuleHandle(NULL) ;
     wincl.lpszClassName = _T("WindowsApp");
@@ -92,12 +93,12 @@ window::window(char* title,int _width,int _height)
     wincl.lpszMenuName = NULL;
     wincl.cbClsExtra = 0;
     wincl.cbWndExtra = 0;
-    wincl.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+    wincl.hbrBackground = (HBRUSH) COLOR_3DDKSHADOW;
     RegisterClassEx (&wincl);
     hwnd = CreateWindowEx (
            0,
            _T("WindowsApp"),         /* Classname */
-           _T(title),       /* Title Text */
+           _T(_title),       /* Title Text */
            WS_OVERLAPPEDWINDOW, /* default window */
            CW_USEDEFAULT,       /* Windows decides the position */
            CW_USEDEFAULT,       /* where the window ends up on the screen */
@@ -109,12 +110,48 @@ window::window(char* title,int _width,int _height)
            NULL                 /* No Window Creation data */
            );
            hdc=GetDC(hwnd);
-
-
-bitm=CreateCompatibleBitmap(hdc,width,height);
+    bitm=CreateCompatibleBitmap(hdc,_width,_height);
 SelectObject(hdc,bitm);
 height=_height;
 width=_width;
+title=_title;
+}
+
+window::window(string _title,int _width,int _height)
+{
+    wincl.hInstance = GetModuleHandle(NULL) ;
+    wincl.lpszClassName = _T("WindowsApp");
+    wincl.lpfnWndProc = WindowProcedure;
+    wincl.style = CS_DBLCLKS;
+    wincl.cbSize = sizeof (WNDCLASSEX);
+    wincl.hIcon = LoadIcon (NULL, IDI_APPLICATION);
+    wincl.hIconSm = LoadIcon (NULL, IDI_APPLICATION);
+    wincl.hCursor = LoadCursor (NULL, IDC_ARROW);
+    wincl.lpszMenuName = NULL;
+    wincl.cbClsExtra = 0;
+    wincl.cbWndExtra = 0;
+    wincl.hbrBackground = (HBRUSH) COLOR_3DDKSHADOW;
+    RegisterClassEx (&wincl);
+    hwnd = CreateWindowEx (
+           0,
+           _T("WindowsApp"),         /* Classname */
+           _T(_title.c_str()),       /* Title Text */
+           WS_OVERLAPPEDWINDOW, /* default window */
+           CW_USEDEFAULT,       /* Windows decides the position */
+           CW_USEDEFAULT,       /* where the window ends up on the screen */
+           _width,                 /* The programs width */
+           _height,                 /* and height in pixels */
+           HWND_DESKTOP,        /* The window is a child-window to desktop */
+           NULL,                /* No menu */
+           GetModuleHandle(NULL),       /* Program Instance handler */
+           NULL                 /* No Window Creation data */
+           );
+           hdc=GetDC(hwnd);
+    bitm=CreateCompatibleBitmap(hdc,544,375);
+SelectObject(hdc,bitm);
+height=_height;
+width=_width;
+title=_title;
 }
 
 void window::show(){
@@ -149,8 +186,7 @@ window::~window(){
 void window::drawPixel(int x,int y,color col){
     SetPixel(hdc,x,y,col);
 }
-void window::drawLine(int x1,int y1,int x2,int y2,int linewidth,color col){
-    setPen(linewidth,col);
+void window::drawLine(int x1,int y1,int x2,int y2){
     MoveToEx(hdc,x1,y1,NULL);
     LineTo(hdc,x2,y2);
 }
@@ -163,44 +199,37 @@ void window::setBrush(color col){
     SelectObject(hdc,brush);
 }
 
-void window::drawEllipse(int x1,int y1,int x2,int y2,int linewidth,color line,color fill){
-    setPen(linewidth,line);
-    setBrush(fill);
+void window::setText(color col){
+    SetTextColor(hdc,col);
+}
+
+void window::drawEllipse(int x1,int y1,int x2,int y2){
     Ellipse(hdc,x1,y1,x2,y2);
 }
 
-void window::drawRectangle(int x1,int y1,int x2,int y2,int linewidth,color line,color fill){
-    setPen(linewidth,line);
-    setBrush(fill);
+void window::drawRectangle(int x1,int y1,int x2,int y2){
     Rectangle(hdc,x1,y1,x2,y2);
 }
 
-void window::drawRoundRect(int x1,int y1,int x2,int y2,int linewidth,int arcSize,color line,color fill){
-    setPen(linewidth,line);
-    setBrush(fill);
+void window::drawRoundRect(int x1,int y1,int x2,int y2,int arcSize){
     RoundRect(hdc,x1,y1,x2,y2,arcSize,arcSize);
 
 }
 
 
-void window::drawPolygon(point *pointss,int num,int linewidth,color line,color fill){
-    setPen(linewidth,line);
-    setBrush(fill);
+void window::drawPolygon(point *pointss,int num){
     Polygon(hdc,pointss,num);
 }
 
-void window::drawPolyline(point *points,int num,int linewidth,color line){
-    setPen(linewidth,line);
+void window::drawPolyline(point *points,int num){
     Polyline(hdc,points,num);
 }
 
-void window::drawText(int x,int y,const char *str,color col){
-    SetTextColor(hdc,col);
+void window::drawText(int x,int y,const char *str){
     TextOut(hdc,x,y,str,strlen(str));
 }
 
-void window::drawText(int x,int y,string str,color col){
-    SetTextColor(hdc,col);
+void window::drawText(int x,int y,string str){
     TextOut(hdc,x,y,str.c_str(),str.length());
 }
 
@@ -230,11 +259,9 @@ void window::clear(){
 	RECT rect;
 
 	SetRect(&rect, 0, 0, width, height);
-
-	brush = CreateSolidBrush(WHITE);
+	setBrush(WHITE);
 	FillRect(hdc, &rect, brush);
-
-drawRectangle(0,0,width,height,1,WHITE,WHITE);
+	drawRectangle(0,0,width,height);
 }
 
 void window::erase(int x1,int y1,int x2,int y2){
@@ -244,10 +271,9 @@ void window::erase(int x1,int y1,int x2,int y2){
 	FillRect(hdc, &rect, brush);
 }
 
-void window::fillRect(int x1,int y1,int x2,int y2,color col){
+void window::fillRect(int x1,int y1,int x2,int y2){
     RECT rect;
 	SetRect(&rect, x1, x2, y1, y2);
-	brush = CreateSolidBrush(col);
 	FillRect(hdc, &rect, brush);
 }
 
@@ -262,6 +288,65 @@ void window::drawBitmap(int x,int y,char* address){
     BitBlt(hdc, x, y, bmp.bmWidth, bmp.bmHeight, temp, 0, 0, SRCCOPY);
 }
 
+void window::drawBitmap(int x,int y,string address){
+	HDC temp;
+    temp  = CreateCompatibleDC(hdc);
+    HBITMAP hbmp;
+    BITMAP bmp;
+    hbmp = (HBITMAP)LoadImage(NULL, address.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE|LR_CREATEDIBSECTION);
+    GetObject(hbmp, sizeof(BITMAP), &bmp);
+    SelectObject(temp, hbmp);
+    BitBlt(hdc, x, y, bmp.bmWidth, bmp.bmHeight, temp, 0, 0, SRCCOPY);
+}
+
 color window::getPixelColor(int x,int y){
     return GetPixel(hdc,x,y);
+}
+
+int window::getWidth(){
+	return width;
+}
+
+int window::getHeight(){
+	return height;
+}
+
+string window::getTitle(){
+	return title;
+}
+
+void window::hide(){
+	ShowWindow(hwnd, SW_HIDE);
+}
+
+point window::getWindowPos(){
+	RECT rect;
+	GetWindowRect(hwnd,&rect);   
+	return XY(rect.left,rect.top);
+}
+
+point getMousePos(){
+	point p;
+	GetCursorPos(&p);
+	return p;
+}
+
+void getMousePos(int &x,int &y){
+	point p;
+	GetCursorPos(&p);
+	x=p.x;
+	y=p.y;
+}
+
+void setMousePos(point p){
+	SetCursorPos(p.x,p.y);
+}
+
+void setMousePos(int x,int y){
+	SetCursorPos(x,y);
+}
+
+void window::resize(int _width,int _height){
+	point p=getWindowPos();
+	MoveWindow(hwnd,p.x,p.y,_width,_height,false);
 }
