@@ -15,21 +15,22 @@ class window
         virtual ~window();
         void show();
         bool isQuiting();
-        void drawLine(int x1,int y1,int x2,int y2,int width,color col);
-        void drawEllipse(int x1,int y1,int x2,int y2,int linewidth,color line,color fill);
-        void drawRectangle(int x1,int y1,int x2,int y2,int linewidth,color line,color fill);
-        void drawRoundRect(int x1,int y1,int x2,int y2,int linewidth,int arcSize,color line,color fill);
-        void drawPolygon(point *points,int num,int linewidth,color line,color fill);
-        void drawPolyline(point *points,int num,int linewidth,color line);
-        void drawText(int x,int y,const char *str,color col);
-        void drawText(int x,int y,string str,color col);
+        void setText(color col);
+        void drawLine(int x1,int y1,int x2,int y2);
+        void drawEllipse(int x1,int y1,int x2,int y2);
+        void drawRectangle(int x1,int y1,int x2,int y2);
+        void drawRoundRect(int x1,int y1,int x2,int y2,int arcSize);
+        void drawPolygon(point *points,int num);
+        void drawPolyline(point *points,int num);
+        void drawText(int x,int y,const char *str);
+        void drawText(int x,int y,string str);
         char getKey();
         bool leftMouseDown();
         bool mediumMouseDown();
         bool rightMouseDown();
         void clear();
         void erase(int x1,int y1,int x2,int y2);
-        void fillRect(int x1,int y1,int x2,int y2,color col);
+        void fillRect(int x1,int y1,int x2,int y2);
         void drawBitmap(int x,int y,char* address);
         void drawBitmap(int x,int y,string address);
         color getPixelColor(int x,int y);
@@ -39,13 +40,13 @@ class window
         point getWindowPos();
         void hide();
         void resize(int _width,int _height);
+        void setPen(int w,color col);
+        void setBrush(color col);
     protected:
 		
     private:
         int width,height;
         char key;
-        void setPen(int w,color col);
-        void setBrush(color col);
         HBITMAP bitm;
         HPEN pen;
         HBRUSH brush;
