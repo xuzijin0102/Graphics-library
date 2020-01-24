@@ -403,5 +403,6 @@ void window::full_screen()
 }
 void window::quit_full_screen()
 {
-	SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_CAPTION);
+	LONG l_WinStyle = GetWindowLong(hwnd,GWL_STYLE);
+	SetWindowLong(hwnd, GWL_STYLE,(l_WinStyle | WS_POPUP | WS_MAXIMIZE) | WS_CAPTION | WS_THICKFRAME | WS_BORDER);
 }

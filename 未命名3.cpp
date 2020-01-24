@@ -65,15 +65,13 @@ int demo1()
 int demo2()
 {
 	window w;
-	w.messagebox("Hello","Hello",1);
 	w.show();
-	w.full_screen();
-	w.create_button("hello",0,0,100,100,3301);
-	w.create_button("hello",0,100,100,100,2);
+	w.create_button("full screen",0,0,100,100,3301);
+	w.create_button("quit full screen",0,100,100,100,2);
 	while(w.update())
 	{
 		if(w.on_button_click(3301)==1)
-			w.messagebox("Hello","Hello",1);
+			w.full_screen();
 		if(w.on_button_click(2)==1)
 		{
 			w.resize(500,500);
