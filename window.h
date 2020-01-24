@@ -45,6 +45,9 @@ class window
         void messagebox(char* text,char* capital,int type);
         void create_button(char* text,int x,int y,int width,int height,int mark);
         bool on_button_click(int mark);
+        void maxsize();
+        void full_screen();
+        void quit_full_screen();
     protected:
     private:
         int width,height;
