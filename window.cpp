@@ -138,7 +138,7 @@ window::window(string _title,int _width,int _height)
            0,
            _T("WindowsApp"),         /* Classname */
            _T(_title.c_str()),       /* Title Text */
-           WS_OVERLAPPEDWINDOW, /* default window */
+           /*WS_MAXIMIZE*/WS_OVERLAPPEDWINDOW, /* default window */
            CW_USEDEFAULT,       /* Windows decides the position */
            CW_USEDEFAULT,       /* where the window ends up on the screen */
            _width,                 /* The programs width */
@@ -388,4 +388,20 @@ bool window::on_button_click(int mark)
 		return 1;
 	}
 	return 0;
+}
+void window::maxsize()
+{
+	ShowWindow(hwnd,SW_MAXIMIZE);
+}
+void window::full_screen()
+{   
+    int cx = GetSystemMetrics(SM_CXSCREEN); 
+    int cy = GetSystemMetrics(SM_CYSCREEN); 
+    LONG l_WinStyle = GetWindowLong(hwnd,GWL_STYLE);
+    SetWindowLong(hwnd,GWL_STYLE,(l_WinStyle | WS_POPUP | WS_MAXIMIZE) & ~WS_CAPTION & ~WS_THICKFRAME & ~WS_BORDER);
+    SetWindowPos(hwnd, HWND_TOP, 0, 0, cx, cy, 0);
+}
+void window::quit_full_screen()
+{
+	SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_CAPTION);
 }
