@@ -2,52 +2,55 @@
 #include <windows.h>
 #include <tchar.h>
 using namespace std;
-LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
-char t;
-bool lb,mb,rb;
-LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+
+LRESULT CALLBACK winProc(HWND, UINT, WPARAM, LPARAM);
+
+LRESULT CALLBACK winProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    window *t;
+    t = (window*)GetWindowLong(hwnd,GWL_USERDATA);
     switch (message)                  /* handle the messages */
     {
         case WM_DESTROY:
             PostQuitMessage (0);       /* send a WM_QUIT to the message queue */
             return 0;
         case WM_KEYDOWN:
-            t=wParam;
+            t->key=wParam;
+            return 0;
+        case WM_KEYUP:
+            t->key='\0';
             return 0;
         case WM_LBUTTONDOWN:
-            lb=true;
+            t->lb=true;
            return 0;
         case WM_MBUTTONDOWN:
-            mb=true;
+            t->mb=true;
             return 0;
         case WM_RBUTTONDOWN:
-            rb=true;
+            t->rb=true;
             return 0;
         case WM_LBUTTONUP:
-            lb=false;
+            t->lb=false;
             return 0;
         case WM_MBUTTONUP:
-            mb=false;
+            t->mb=false;
             return 0;
         case WM_RBUTTONUP:
-            rb=false;
+            t->rb=false;
             return 0;
         case WM_NULL:
             return 0;
-
         default:
             break;
     }
 
     return DefWindowProc (hwnd, message, wParam, lParam);
 }
-
 window::window()
 {
     wincl.hInstance = GetModuleHandle(NULL) ;
     wincl.lpszClassName = _T("WindowsApp");
-    wincl.lpfnWndProc = WindowProcedure;
+    wincl.lpfnWndProc = winProc;
     wincl.style = CS_DBLCLKS;
     wincl.cbSize = sizeof (WNDCLASSEX);
     wincl.hIcon = LoadIcon (NULL, IDI_APPLICATION);
@@ -70,21 +73,23 @@ window::window()
            HWND_DESKTOP,        /* The window is a child-window to desktop */
            NULL,                /* No menu */
            GetModuleHandle(NULL),       /* Program Instance handler */
-           NULL                 /* No Window Creation data */
+           NULL        /* No Window Creation data */
            );
            hdc=GetDC(hwnd);
     bitm=CreateCompatibleBitmap(hdc,544,375);
-SelectObject(hdc,bitm);
-height=544;
-width=255;
-title="NewWindow";
+    SelectObject(hdc,bitm);
+    height=544;
+    width=255;
+    title="NewWindow";
+    SetWindowLong(hwnd,GWL_USERDATA,LONG(&(*this)));
 }
+
 
 window::window(char* _title,int _width,int _height)
 {
     wincl.hInstance = GetModuleHandle(NULL) ;
     wincl.lpszClassName = _T("WindowsApp");
-    wincl.lpfnWndProc = WindowProcedure;
+    wincl.lpfnWndProc = winProc;
     wincl.style = CS_DBLCLKS;
     wincl.cbSize = sizeof (WNDCLASSEX);
     wincl.hIcon = LoadIcon (NULL, IDI_APPLICATION);
@@ -121,7 +126,7 @@ window::window(string _title,int _width,int _height)
 {
     wincl.hInstance = GetModuleHandle(NULL) ;
     wincl.lpszClassName = _T("WindowsApp");
-    wincl.lpfnWndProc = WindowProcedure;
+    wincl.lpfnWndProc = winProc;
     wincl.style = CS_DBLCLKS;
     wincl.cbSize = sizeof (WNDCLASSEX);
     wincl.hIcon = LoadIcon (NULL, IDI_APPLICATION);
@@ -239,9 +244,8 @@ point XY(int x,int y){
     t.y=y;
     return t;
 }
-
+/*
 char window::getKey(){
-    key=t;
     return key;
 }
 
@@ -253,7 +257,7 @@ bool window::mediumMouseDown(){
 }
 bool window::rightMouseDown(){
     return rb;
-}
+}*/
 
 void window::clear(){
 	RECT rect;
@@ -321,32 +325,63 @@ void window::hide(){
 
 point window::getWindowPos(){
 	RECT rect;
-	GetWindowRect(hwnd,&rect);   
+	GetWindowRect(hwnd,&rect);
 	return XY(rect.left,rect.top);
 }
 
-point getMousePos(){
-	point p;
+point window::getMousePos(){
+	point p,pp;
+	pp=getWindowPos();
 	GetCursorPos(&p);
+	p.x-=pp.x;
+	p.y-=pp.y;
 	return p;
 }
 
-void getMousePos(int &x,int &y){
-	point p;
+void window::getMousePos(int &x,int &y){
+	point p,pp;
 	GetCursorPos(&p);
+	pp=getWindowPos();
+	p.x-=pp.x;
+	p.y-=pp.y;
 	x=p.x;
 	y=p.y;
 }
 
-void setMousePos(point p){
+void window::setMousePos(point p){
+    point pp;
+	pp=getWindowPos();
+	GetCursorPos(&p);
+	p.x+=pp.x;
+	p.y+=pp.y;
 	SetCursorPos(p.x,p.y);
 }
 
-void setMousePos(int x,int y){
-	SetCursorPos(x,y);
+void window::setMousePos(int x,int y){
+    point p;
+	p=getWindowPos();
+	SetCursorPos(x+p.x,y+p.y);
 }
 
 void window::resize(int _width,int _height){
 	point p=getWindowPos();
 	MoveWindow(hwnd,p.x,p.y,_width,_height,false);
+}
+
+void window::maxSize()
+{
+	ShowWindow(hwnd,SW_MAXIMIZE);
+}
+void window::fullScreen()
+{
+    int cx = GetSystemMetrics(SM_CXSCREEN);
+    int cy = GetSystemMetrics(SM_CYSCREEN);
+    LONG l_WinStyle = GetWindowLong(hwnd,GWL_STYLE);
+    SetWindowLong(hwnd,GWL_STYLE,(l_WinStyle | WS_POPUP | WS_MAXIMIZE) & ~WS_CAPTION & ~WS_THICKFRAME & ~WS_BORDER);
+    SetWindowPos(hwnd, HWND_TOP, 0, 0, cx, cy, 0);
+}
+void window::normalScreen()
+{
+	LONG l_WinStyle = GetWindowLong(hwnd,GWL_STYLE);
+	SetWindowLong(hwnd, GWL_STYLE,(l_WinStyle | WS_POPUP | WS_MAXIMIZE) | WS_CAPTION | WS_THICKFRAME | WS_BORDER);
 }

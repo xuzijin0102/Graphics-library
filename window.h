@@ -42,11 +42,19 @@ class window
         void resize(int _width,int _height);
         void setPen(int w,color col);
         void setBrush(color col);
+        point getMousePos();
+        void getMousePos(int &x,int &y);
+        void setMousePos(point p);
+        void setMousePos(int x,int y);
+        void maxSize();
+        void fullScreen();
+        void normalScreen();
+        char key;
+        bool lb,mb,rb;
     protected:
-		
+
     private:
         int width,height;
-        char key;
         HBITMAP bitm;
         HPEN pen;
         HBRUSH brush;
@@ -55,13 +63,10 @@ class window
    	 	MSG messages;
 		WNDCLASSEX wincl;
     	HDC hdc;
-
+        //void defKeyDown(char key,in);
+        //void defKeyUp();
+        //void defMouseDown(char);
+        //void defMouseUp();
 };
 extern point XY(int x,int y);
-int getDesktopWidth();
-int getDesktopHeight();
-point getMousePos();
-void getMousePos(int &x,int &y);
-void setMousePos(point p);
-void setMousePos(int x,int y);
 #endif // WINDOW_H
