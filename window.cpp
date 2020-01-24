@@ -5,6 +5,7 @@ using namespace std;
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 char t;
 bool lb,mb,rb;
+int _cbutton;
 LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)                  /* handle the messages */
@@ -35,11 +36,12 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             return 0;
         case WM_NULL:
             return 0;
-
+		case WM_COMMAND:
+			_cbutton=LOWORD(wParam);
+			break;
         default:
             break;
     }
-
     return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
@@ -349,4 +351,41 @@ void setMousePos(int x,int y){
 void window::resize(int _width,int _height){
 	point p=getWindowPos();
 	MoveWindow(hwnd,p.x,p.y,_width,_height,false);
+}
+void window::messagebox(char* text,char* capital,int type)
+{
+	/*
+	TYPE:
+	1:OK按钮
+	2:是否
+	3:放弃，重试，跳过
+	4:yes,no,cancel
+	5:重试（retry），取消
+	6:OK,cancel 
+	*/
+	if(type==1)
+		MessageBox(hwnd,text,capital,MB_OK);
+	else if(type==2)
+		MessageBox(hwnd,text,capital,MB_YESNO);
+	else if(type==3)
+		MessageBox(hwnd,text,capital,MB_ABORTRETRYIGNORE);
+	else if(type==4)
+		MessageBox(hwnd,text,capital,MB_YESNOCANCEL);
+	else if(type==5)
+		MessageBox(hwnd,text,capital,MB_RETRYCANCEL);
+	else if(type==6)
+		MessageBox(hwnd,text,capital,MB_OKCANCEL);
+}
+void window::create_button(char* text,int x,int y,int width,int height,int mark)
+{
+	CreateWindow("Button", text, WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, x, y, width, height, hwnd, (HMENU)mark, (HINSTANCE)hwnd, NULL); 
+}
+bool window::on_button_click(int mark)
+{
+	if(_cbutton==mark)
+	{
+		_cbutton=-1;
+		return 1;
+	}
+	return 0;
 }

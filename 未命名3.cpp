@@ -9,7 +9,6 @@ bool used[4000][4000];
 void bfs(window w)
 {
 	queue<pair<int,int> > q;
-	//q.push(make_pair(100,100));
 	used[100][100]=0;
 	while(w.update())
 	{
@@ -30,44 +29,53 @@ void bfs(window w)
 		w.drawPixel(x,y,RED);
 		if(!used[x+1][y])
 		q.push(make_pair(x+1,y));
-		q.push(make_pair(x+1,y+1));
+		//q.push(make_pair(x+1,y+1));
 		if(!used[x][y+1])
 		q.push(make_pair(x,y+1));
 		q.push(make_pair(x-1,y+1));
-		if(!used[x-1][y])
+		//if(!used[x-1][y])
 		q.push(make_pair(x-1,y));
 		if(!used[x][y-1])
 		q.push(make_pair(x,y-1));
-		q.push(make_pair(x+1,y-1));
-		q.push(make_pair(x-1,y-1));
-		for(int i=0;i<1000;i++);
+		//q.push(make_pair(x+1,y-1));
+		//q.push(make_pair(x-1,y-1));
+		for(int i=0;i<100000;i++);
 	}
 }
-int main()
+int demo1()
 {
 	srand(time(0));
-	window w("w",1000,1000);
-	//w.show();
-	//w.drawText(0,0,"Мгдижа...",RGB(0,0,0));
-	//Sleep(1000);
-	//w.destroy();
-//	w.change("shit",1000,1000);
+	window w("bfs demo",1000,1000);
 	w.show();
-	//Sleep(10000);
 	w.setBrush(BLACK);
 	w.setPen(1,BLACK);
 	int x=4000,y=4000;
 	while(!w.leftMouseDown())
 	{
-	//if(i%100000==1)
 		w.update();
 		int rndx=rand()%4000;
 		int rndy=rand()%4000;
 		used[rndx][rndy]=1;
 		w.drawPixel(rndx,rndy,BLACK);
 	}
-	//while(!w.leftMouseDown());
 	bfs(w);
 	while(w.update());
 	return 0;
+}
+int demo2()
+{
+	window w;
+	w.messagebox("Hello","Hello",1);
+	w.show();
+	w.create_button("hello",0,0,100,100,3301);
+	w.create_button("hello",0,100,100,100,2);
+	while(w.update())
+	{
+		if(w.on_button_click(3301)==1)
+			w.messagebox("Hello","Hello",1);
+	}
+}
+int main()
+{
+	return demo2();
 }
