@@ -42,8 +42,10 @@ class window
         void resize(int _width,int _height);
         void setPen(int w,color col);
         void setBrush(color col);
+        void messagebox(char* text,char* capital,int type);
+        void create_button(char* text,int x,int y,int width,int height,int mark);
+        bool on_button_click(int mark);
     protected:
-		
     private:
         int width,height;
         char key;
@@ -55,7 +57,7 @@ class window
    	 	MSG messages;
 		WNDCLASSEX wincl;
     	HDC hdc;
-
+    	
 };
 extern point XY(int x,int y);
 int getDesktopWidth();
