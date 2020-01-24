@@ -78,6 +78,7 @@ int demo2()
 			w.quit_full_screen();
 		}
 	}
+	return 0;
 }
 int main()
 {
