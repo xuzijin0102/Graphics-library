@@ -1,6 +1,7 @@
 #include "window.h"
 #include <windows.h>
 #include <tchar.h>
+#include <iostream>
 using namespace std;
 
 LRESULT CALLBACK winProc(HWND, UINT, WPARAM, LPARAM);
@@ -82,6 +83,8 @@ window::window()
     width=255;
     title="NewWindow";
     SetWindowLong(hwnd,GWL_USERDATA,LONG(&(*this)));
+    cout<<LONG(&(*this))<<endl;
+
 }
 
 
@@ -120,6 +123,7 @@ SelectObject(hdc,bitm);
 height=_height;
 width=_width;
 title=_title;
+    SetWindowLong(hwnd,GWL_USERDATA,LONG(&(*this)));
 }
 
 window::window(string _title,int _width,int _height)
@@ -157,6 +161,45 @@ SelectObject(hdc,bitm);
 height=_height;
 width=_width;
 title=_title;
+    SetWindowLong(hwnd,GWL_USERDATA,LONG(&(*this)));
+}
+
+window::window(string _title,int _width,int _height,int x,int y,HWND father)
+{
+    wincl.hInstance = GetModuleHandle(NULL) ;
+    wincl.lpszClassName = _T("WindowsApp");
+    wincl.lpfnWndProc = winProc;
+    wincl.style = CS_DBLCLKS;
+    wincl.cbSize = sizeof (WNDCLASSEX);
+    wincl.hIcon = LoadIcon (NULL, IDI_APPLICATION);
+    wincl.hIconSm = LoadIcon (NULL, IDI_APPLICATION);
+    wincl.hCursor = LoadCursor (NULL, IDC_ARROW);
+    wincl.lpszMenuName = NULL;
+    wincl.cbClsExtra = 0;
+    wincl.cbWndExtra = 0;
+    wincl.hbrBackground = (HBRUSH) COLOR_3DDKSHADOW;
+    RegisterClassEx (&wincl);
+    hwnd = CreateWindowEx (
+           0,
+           _T("WindowsApp"),         /* Classname */
+           _T(_title.c_str()),       /* Title Text */
+           WS_OVERLAPPEDWINDOW|WS_CHILD, /* default window */
+           x,       /* Windows decides the position */
+           y,       /* where the window ends up on the screen */
+           _width,                 /* The programs width */
+           _height,                 /* and height in pixels */
+           father,        /* The window is a child-window to desktop */
+           NULL,                /* No menu */
+           GetModuleHandle(NULL),       /* Program Instance handler */
+           NULL                 /* No Window Creation data */
+           );
+           hdc=GetDC(hwnd);
+    bitm=CreateCompatibleBitmap(hdc,544,375);
+SelectObject(hdc,bitm);
+height=_height;
+width=_width;
+title=_title;
+    SetWindowLong(hwnd,GWL_USERDATA,LONG(&(*this)));
 }
 
 void window::show(){
@@ -384,4 +427,18 @@ void window::normalScreen()
 {
 	LONG l_WinStyle = GetWindowLong(hwnd,GWL_STYLE);
 	SetWindowLong(hwnd, GWL_STYLE,(l_WinStyle | WS_POPUP | WS_MAXIMIZE) | WS_CAPTION | WS_THICKFRAME | WS_BORDER);
+}
+int window::clickingButton(){
+    int t=0;
+    if(lb)t+=1;
+    if(mb)t+=2;
+    if(rb)t+=4;
+    return t;
+}
+HWND window::getHwnd(){
+    return hwnd;
+}
+
+void window::setHwnd(HWND hWnd){
+    hwnd=hWnd;
 }

@@ -11,6 +11,7 @@ class window
         void drawPixel(int x,int y,color col);
         window(char* _title,int width,int height);
         window(string _title,int _width,int _height);
+        window(string _title,int _width,int _height,int x,int y,HWND father);
         bool update();
         virtual ~window();
         void show();
@@ -50,7 +51,10 @@ class window
         void fullScreen();
         void normalScreen();
         char key;
+        int clickingButton();//NONE=0,LMB=1,MMB=2,RMB=4,L+M=3,L+R=5,M+R=6,L+M+R=7
         bool lb,mb,rb;
+        HWND getHwnd();
+        void setHwnd(HWND Hwnd);
     protected:
 
     private:

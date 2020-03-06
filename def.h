@@ -5,7 +5,7 @@
 #define screenWidth GetSystemMetrics(SM_CXFULLSCREEN);
 #define screenHeight GetSystemMetrics(SM_CYFULLSCREEN);
 #define KEY_DOWN(VK_NONAME) ((GetAsyncKeyState(VK_NONAME) & 0x8000) ? 1:0)
-
+#define desktopHwnd HWND_DESKTOP
 #define RED RGB(255,0,0)
 #define GREEN RGB(0,255,0)
 #define BLUE RGB(0,0,255)
