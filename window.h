@@ -9,9 +9,8 @@ class window
     public:
         window();
         void drawPixel(int x,int y,color col);
-        window(char* _title,int width,int height);
-        window(string _title,int _width,int _height);
-        window(string _title,int _width,int _height,int x,int y,HWND father);
+        window(const char* _title,int width,int height);
+        window(const char* _title,int _width,int _height,int x,int y,HWND father);
         bool update();
         virtual ~window();
         void show();
@@ -24,7 +23,6 @@ class window
         void drawPolygon(point *points,int num);
         void drawPolyline(point *points,int num);
         void drawText(int x,int y,const char *str);
-        void drawText(int x,int y,string str);
         char getKey();
         bool leftMouseDown();
         bool mediumMouseDown();
@@ -32,8 +30,7 @@ class window
         void clear();
         void erase(int x1,int y1,int x2,int y2);
         void fillRect(int x1,int y1,int x2,int y2);
-        void drawBitmap(int x,int y,char* address);
-        void drawBitmap(int x,int y,string address);
+        void drawBitmap(int x,int y,const char* address);
         color getPixelColor(int x,int y);
         int getWidth();
         int getHeight();
@@ -43,6 +40,8 @@ class window
         void resize(int _width,int _height);
         void setPen(int w,color col);
         void setBrush(color col);
+        void setPen(HPEN hp);
+        void setBrush(HBRUSH hb);
         point getMousePos();
         void getMousePos(int &x,int &y);
         void setMousePos(point p);

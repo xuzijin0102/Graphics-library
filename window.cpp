@@ -49,6 +49,8 @@ LRESULT CALLBACK winProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 window::window()
 {
+    lb=rb=mb=false;
+    key='\0';
     wincl.hInstance = GetModuleHandle(NULL) ;
     wincl.lpszClassName = _T("WindowsApp");
     wincl.lpfnWndProc = winProc;
@@ -88,8 +90,10 @@ window::window()
 }
 
 
-window::window(char* _title,int _width,int _height)
+window::window(const char* _title,int _width,int _height)
 {
+    lb=rb=mb=false;
+    key='\0';
     wincl.hInstance = GetModuleHandle(NULL) ;
     wincl.lpszClassName = _T("WindowsApp");
     wincl.lpfnWndProc = winProc;
@@ -126,46 +130,12 @@ title=_title;
     SetWindowLong(hwnd,GWL_USERDATA,LONG(&(*this)));
 }
 
-window::window(string _title,int _width,int _height)
-{
-    wincl.hInstance = GetModuleHandle(NULL) ;
-    wincl.lpszClassName = _T("WindowsApp");
-    wincl.lpfnWndProc = winProc;
-    wincl.style = CS_DBLCLKS;
-    wincl.cbSize = sizeof (WNDCLASSEX);
-    wincl.hIcon = LoadIcon (NULL, IDI_APPLICATION);
-    wincl.hIconSm = LoadIcon (NULL, IDI_APPLICATION);
-    wincl.hCursor = LoadCursor (NULL, IDC_ARROW);
-    wincl.lpszMenuName = NULL;
-    wincl.cbClsExtra = 0;
-    wincl.cbWndExtra = 0;
-    wincl.hbrBackground = (HBRUSH) COLOR_3DDKSHADOW;
-    RegisterClassEx (&wincl);
-    hwnd = CreateWindowEx (
-           0,
-           _T("WindowsApp"),         /* Classname */
-           _T(_title.c_str()),       /* Title Text */
-           WS_OVERLAPPEDWINDOW, /* default window */
-           CW_USEDEFAULT,       /* Windows decides the position */
-           CW_USEDEFAULT,       /* where the window ends up on the screen */
-           _width,                 /* The programs width */
-           _height,                 /* and height in pixels */
-           HWND_DESKTOP,        /* The window is a child-window to desktop */
-           NULL,                /* No menu */
-           GetModuleHandle(NULL),       /* Program Instance handler */
-           NULL                 /* No Window Creation data */
-           );
-           hdc=GetDC(hwnd);
-    bitm=CreateCompatibleBitmap(hdc,544,375);
-SelectObject(hdc,bitm);
-height=_height;
-width=_width;
-title=_title;
-    SetWindowLong(hwnd,GWL_USERDATA,LONG(&(*this)));
-}
 
-window::window(string _title,int _width,int _height,int x,int y,HWND father)
+
+window::window(const char* _title,int _width,int _height,int x,int y,HWND father)
 {
+    lb=rb=mb=false;
+    key='\0';
     wincl.hInstance = GetModuleHandle(NULL) ;
     wincl.lpszClassName = _T("WindowsApp");
     wincl.lpfnWndProc = winProc;
@@ -182,7 +152,7 @@ window::window(string _title,int _width,int _height,int x,int y,HWND father)
     hwnd = CreateWindowEx (
            0,
            _T("WindowsApp"),         /* Classname */
-           _T(_title.c_str()),       /* Title Text */
+           _T(_title),       /* Title Text */
            WS_OVERLAPPEDWINDOW|WS_CHILD, /* default window */
            x,       /* Windows decides the position */
            y,       /* where the window ends up on the screen */
@@ -246,6 +216,12 @@ void window::setBrush(color col){
     brush=CreateSolidBrush(col);
     SelectObject(hdc,brush);
 }
+void window::setPen(HPEN hp){
+    SelectObject(hdc,hp);
+}
+void window::setBrush(HBRUSH hb){
+    SelectObject(hdc,hb);
+}
 
 void window::setText(color col){
     SetTextColor(hdc,col);
@@ -277,9 +253,7 @@ void window::drawText(int x,int y,const char *str){
     TextOut(hdc,x,y,str,strlen(str));
 }
 
-void window::drawText(int x,int y,string str){
-    TextOut(hdc,x,y,str.c_str(),str.length());
-}
+
 
 point XY(int x,int y){
     point t;
@@ -287,7 +261,6 @@ point XY(int x,int y){
     t.y=y;
     return t;
 }
-/*
 char window::getKey(){
     return key;
 }
@@ -300,7 +273,7 @@ bool window::mediumMouseDown(){
 }
 bool window::rightMouseDown(){
     return rb;
-}*/
+}
 
 void window::clear(){
 	RECT rect;
@@ -324,23 +297,12 @@ void window::fillRect(int x1,int y1,int x2,int y2){
 	FillRect(hdc, &rect, brush);
 }
 
-void window::drawBitmap(int x,int y,char* address){
+void window::drawBitmap(int x,int y,const char* address){
     HDC temp;
     temp  = CreateCompatibleDC(hdc);
     HBITMAP hbmp;
     BITMAP bmp;
     hbmp = (HBITMAP)LoadImage(NULL, address, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE|LR_CREATEDIBSECTION);
-    GetObject(hbmp, sizeof(BITMAP), &bmp);
-    SelectObject(temp, hbmp);
-    BitBlt(hdc, x, y, bmp.bmWidth, bmp.bmHeight, temp, 0, 0, SRCCOPY);
-}
-
-void window::drawBitmap(int x,int y,string address){
-	HDC temp;
-    temp  = CreateCompatibleDC(hdc);
-    HBITMAP hbmp;
-    BITMAP bmp;
-    hbmp = (HBITMAP)LoadImage(NULL, address.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE|LR_CREATEDIBSECTION);
     GetObject(hbmp, sizeof(BITMAP), &bmp);
     SelectObject(temp, hbmp);
     BitBlt(hdc, x, y, bmp.bmWidth, bmp.bmHeight, temp, 0, 0, SRCCOPY);
