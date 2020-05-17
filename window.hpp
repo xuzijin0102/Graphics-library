@@ -13,53 +13,53 @@ class window
 {
     public:
         window();
-        void drawPixel(int x,int y,color col);
+        window& drawPixel(int x,int y,color col);
         window(const char* _title,int width,int height);
         window(const char* _title,int _width,int _height,int x,int y,HWND father);
         bool update();
         virtual ~window();
-        void show();
+        window& show();
         bool isQuiting();
-        void setText(color col);
-        void drawLine(int x1,int y1,int x2,int y2);
-        void drawEllipse(int x1,int y1,int x2,int y2);
-        void drawRectangle(int x1,int y1,int x2,int y2);
-        void drawRoundRect(int x1,int y1,int x2,int y2,int arcSize);
-        void drawPolygon(point *points,int num);
-        void drawPolyline(point *points,int num);
-        void drawText(int x,int y,const char *str);
+        window& setText(color col);
+        window& drawLine(int x1,int y1,int x2,int y2);
+        window& drawEllipse(int x1,int y1,int x2,int y2);
+        window& drawRectangle(int x1,int y1,int x2,int y2);
+        window& drawRoundRect(int x1,int y1,int x2,int y2,int arcSize);
+        window& drawPolygon(point *points,int num);
+        window& drawPolyline(point *points,int num);
+        window& drawText(int x,int y,const char *str);
         char getKey();
         bool leftMouseDown();
         bool mediumMouseDown();
         bool rightMouseDown();
-        void clear();
-        void erase(int x1,int y1,int x2,int y2);
-        void fillRect(int x1,int y1,int x2,int y2);
-        void drawBitmap(int x,int y,bitmap bm);
+        window& clear();
+        window& erase(int x1,int y1,int x2,int y2);
+        window& fillRect(int x1,int y1,int x2,int y2);
+        window& drawBitmap(int x,int y,bitmap bm);
         color getPixelColor(int x,int y);
         int getWidth();
         int getHeight();
         string getTitle();
         point getWindowPos();
-        void hide();
-        void resize(int _width,int _height);
-        void setPen(int w,color col);
-        void setBrush(color col);
-        void setPen(HPEN hp);
-        void setBrush(HBRUSH hb);
+        window& hide();
+        window& resize(int _width,int _height);
+        window& setPen(int w,color col);
+        window& setBrush(color col);
+        window& setPen(HPEN hp);
+        window& setBrush(HBRUSH hb);
         point getMousePos();
-        void getMousePos(int &x,int &y);
-        void setMousePos(point p);
-        void setMousePos(int x,int y);
-        void maxSize();
-        void fullScreen();
-        void normalScreen();
+        window& getMousePos(int &x,int &y);
+        window& setMousePos(point p);
+        window& setMousePos(int x,int y);
+        window& maxSize();
+        window& fullScreen();
+        window& normalScreen();
         char key;
         int clickingButton();//NONE=0,LMB=1,MMB=2,RMB=4,L+M=3,L+R=5,M+R=6,L+M+R=7
         bool lb,mb,rb;
         HWND getHwnd();
         HDC getHdc();
-        void setHwnd(HWND Hwnd);
+        window& setHwnd(HWND Hwnd);
     protected:
 
     private:
@@ -71,10 +71,10 @@ class window
    	 	MSG messages;
 		WNDCLASSEX wincl;
     	HDC hdc;
-        //void defKeyDown(char key,in);
-        //void defKeyUp();
-        //void defMouseDown(char);
-        //void defMouseUp();
+        //window& defKeyDown(char key,in);
+        //window& defKeyUp();
+        //window& defMouseDown(char);
+        //window& defMouseUp();
 };
 extern point XY(int x,int y);
 
@@ -85,7 +85,7 @@ LRESULT CALLBACK winProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK winProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     window *t;
-    t = (window*)GetWindowLong(hwnd,GWL_USERDATA);
+    t = (window*)GetWindowLong(hwnd,GWLP_USERDATA);
     switch (message)                  /* handle the messages */
     {
         case WM_DESTROY:
@@ -158,7 +158,7 @@ window::window()
     height=544;
     width=255;
     title="NewWindow";
-    SetWindowLong(hwnd,GWL_USERDATA,LONG(&(*this)));
+    SetWindowLong(hwnd,GWLP_USERDATA,INT64(&(*this)));
 
 }
 
@@ -198,7 +198,7 @@ window::window(const char* _title,int _width,int _height)
 height=_height;
 width=_width;
 title=_title;
-    SetWindowLong(hwnd,GWL_USERDATA,LONG(&(*this)));
+    SetWindowLong(hwnd,GWLP_USERDATA,INT64(&(*this)));
 }
 
 
@@ -238,12 +238,12 @@ window::window(const char* _title,int _width,int _height,int x,int y,HWND father
 height=_height;
 width=_width;
 title=_title;
-    SetWindowLong(hwnd,GWL_USERDATA,LONG(&(*this)));
+    SetWindowLong(hwnd,GWLP_USERDATA,INT64(&(*this)));
 }
 
-void window::show(){
+window& window::show(){
     ShowWindow (hwnd, 10);
-
+    return *this;
 }
 bool window::update(){
 
@@ -270,56 +270,69 @@ window::~window(){
 
 
 
-void window::drawPixel(int x,int y,color col){
+window& window::drawPixel(int x,int y,color col){
     SetPixel(hdc,x,y,col);
+    return *this;
 }
-void window::drawLine(int x1,int y1,int x2,int y2){
+window& window::drawLine(int x1,int y1,int x2,int y2){
     MoveToEx(hdc,x1,y1,NULL);
     LineTo(hdc,x2,y2);
+    return *this;
 }
-void window::setPen(int w,color col){
+window& window::setPen(int w,color col){
     pen=CreatePen(PS_SOLID,w,col);
     SelectObject(hdc,pen);
+    return *this;
 }
-void window::setBrush(color col){
+window& window::setBrush(color col){
     brush=CreateSolidBrush(col);
     SelectObject(hdc,brush);
+    return *this;
 }
-void window::setPen(HPEN hp){
+window& window::setPen(HPEN hp){
     SelectObject(hdc,hp);
+    return *this;
 }
-void window::setBrush(HBRUSH hb){
+window& window::setBrush(HBRUSH hb){
     SelectObject(hdc,hb);
+    return *this;
 }
 
-void window::setText(color col){
+window& window::setText(color col){
     SetTextColor(hdc,col);
+    return *this;
 }
 
-void window::drawEllipse(int x1,int y1,int x2,int y2){
+window& window::drawEllipse(int x1,int y1,int x2,int y2){
     Ellipse(hdc,x1,y1,x2,y2);
+    return *this;
 }
 
-void window::drawRectangle(int x1,int y1,int x2,int y2){
+window& window::drawRectangle(int x1,int y1,int x2,int y2){
     Rectangle(hdc,x1,y1,x2,y2);
+    return *this;
 }
 
-void window::drawRoundRect(int x1,int y1,int x2,int y2,int arcSize){
+window& window::drawRoundRect(int x1,int y1,int x2,int y2,int arcSize){
     RoundRect(hdc,x1,y1,x2,y2,arcSize,arcSize);
+    return *this;
 
 }
 
 
-void window::drawPolygon(point *pointss,int num){
+window& window::drawPolygon(point *pointss,int num){
     Polygon(hdc,pointss,num);
+    return *this;
 }
 
-void window::drawPolyline(point *points,int num){
+window& window::drawPolyline(point *points,int num){
     Polyline(hdc,points,num);
+    return *this;
 }
 
-void window::drawText(int x,int y,const char *str){
+window& window::drawText(int x,int y,const char *str){
     TextOut(hdc,x,y,str,strlen(str));
+    return *this;
 }
 
 
@@ -344,30 +357,34 @@ bool window::rightMouseDown(){
     return rb;
 }
 
-void window::clear(){
+window& window::clear(){
 	RECT rect;
 
 	SetRect(&rect, 0, 0, width, height);
 	setBrush(WHITE);
 	FillRect(hdc, &rect, brush);
 	drawRectangle(0,0,width,height);
+    return *this;
 }
 
-void window::erase(int x1,int y1,int x2,int y2){
+window& window::erase(int x1,int y1,int x2,int y2){
 	RECT rect;
 	SetRect(&rect, x1, x2, y1, y2);
 	brush = CreateSolidBrush(WHITE);
 	FillRect(hdc, &rect, brush);
+    return *this;
 }
 
-void window::fillRect(int x1,int y1,int x2,int y2){
+window& window::fillRect(int x1,int y1,int x2,int y2){
     RECT rect;
 	SetRect(&rect, x1, x2, y1, y2);
 	FillRect(hdc, &rect, brush);
+    return *this;
 }
 
-void window::drawBitmap(int x,int y,bitmap bm){
+window& window::drawBitmap(int x,int y,bitmap bm){
     BitBlt(hdc, x, y, bm.getWidth(), bm.getHeight(), bm.getDc(), 0, 0, SRCCOPY);
+    return *this;
 }
 color window::getPixelColor(int x,int y){
     return GetPixel(hdc,x,y);
@@ -385,8 +402,9 @@ string window::getTitle(){
 	return title;
 }
 
-void window::hide(){
+window& window::hide(){
 	ShowWindow(hwnd, SW_HIDE);
+    return *this;
 }
 
 point window::getWindowPos(){
@@ -404,7 +422,7 @@ point window::getMousePos(){
 	return p;
 }
 
-void window::getMousePos(int &x,int &y){
+window& window::getMousePos(int &x,int &y){
 	point p,pp;
 	GetCursorPos(&p);
 	pp=getWindowPos();
@@ -412,44 +430,51 @@ void window::getMousePos(int &x,int &y){
 	p.y-=pp.y;
 	x=p.x;
 	y=p.y;
+    return *this;
 }
 
-void window::setMousePos(point p){
+window& window::setMousePos(point p){
     point pp;
 	pp=getWindowPos();
 	GetCursorPos(&p);
 	p.x+=pp.x;
 	p.y+=pp.y;
 	SetCursorPos(p.x,p.y);
+    return *this;
 }
 
-void window::setMousePos(int x,int y){
+window& window::setMousePos(int x,int y){
     point p;
 	p=getWindowPos();
 	SetCursorPos(x+p.x,y+p.y);
+    return *this;
 }
 
-void window::resize(int _width,int _height){
+window& window::resize(int _width,int _height){
 	point p=getWindowPos();
 	MoveWindow(hwnd,p.x,p.y,_width,_height,false);
+    return *this;
 }
 
-void window::maxSize()
+window& window::maxSize()
 {
 	ShowWindow(hwnd,SW_MAXIMIZE);
+    return *this;
 }
-void window::fullScreen()
+window& window::fullScreen()
 {
     int cx = GetSystemMetrics(SM_CXSCREEN);
     int cy = GetSystemMetrics(SM_CYSCREEN);
     LONG l_WinStyle = GetWindowLong(hwnd,GWL_STYLE);
     SetWindowLong(hwnd,GWL_STYLE,(l_WinStyle | WS_POPUP | WS_MAXIMIZE) & ~WS_CAPTION & ~WS_THICKFRAME & ~WS_BORDER);
     SetWindowPos(hwnd, HWND_TOP, 0, 0, cx, cy, 0);
+    return *this;
 }
-void window::normalScreen()
+window& window::normalScreen()
 {
 	LONG l_WinStyle = GetWindowLong(hwnd,GWL_STYLE);
 	SetWindowLong(hwnd, GWL_STYLE,(l_WinStyle | WS_POPUP | WS_MAXIMIZE) | WS_CAPTION | WS_THICKFRAME | WS_BORDER);
+    return *this;
 }
 int window::clickingButton(){
     int t=0;
@@ -462,8 +487,9 @@ HWND window::getHwnd(){
     return hwnd;
 }
 
-void window::setHwnd(HWND hWnd){
+window& window::setHwnd(HWND hWnd){
     hwnd=hWnd;
+    return *this;
 }
 
 
