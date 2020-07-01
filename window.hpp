@@ -163,8 +163,16 @@ window::window()
     height=544;
     width=255;
     title="NewWindow";
+    hdc=CreateCompatibleDC(wdc);
+    mBitm=CreateCompatibleBitmap(wdc,width,height);
+    SelectObject(hdc,mBitm);
     SetWindowLong(hwnd,GWLP_USERDATA,INT64(&(*this)));
 
+    RECT rect;
+    SetRect(&rect, 0, 0, width, height);
+    setBrush(WHITE);
+    FillRect(hdc, &rect, brush);
+    drawRectangle(0,0,width,height);
 }
 
 
@@ -208,6 +216,12 @@ window::window(const char* _title,int _width,int _height)
     mBitm=CreateCompatibleBitmap(wdc,width,height);
     SelectObject(hdc,mBitm);
     SetWindowLong(hwnd,GWLP_USERDATA,INT64(&(*this)));
+
+    RECT rect;
+    SetRect(&rect, 0, 0, width, height);
+    setBrush(WHITE);
+    FillRect(hdc, &rect, brush);
+    drawRectangle(0,0,width,height);
 }
 
 
@@ -247,7 +261,16 @@ window::window(const char* _title,int _width,int _height,int x,int y,HWND father
     height=_height;
     width=_width;
     title=_title;
+    hdc=CreateCompatibleDC(wdc);
+    mBitm=CreateCompatibleBitmap(wdc,width,height);
+    SelectObject(hdc,mBitm);
     SetWindowLong(hwnd,GWLP_USERDATA,INT64(&(*this)));
+
+    RECT rect;
+    SetRect(&rect, 0, 0, width, height);
+    setBrush(WHITE);
+    FillRect(hdc, &rect, brush);
+    drawRectangle(0,0,width,height);
 }
 
 window& window::show()
@@ -390,7 +413,6 @@ bool window::rightMouseDown()
 window& window::clear()
 {
     RECT rect;
-
     SetRect(&rect, 0, 0, width, height);
     setBrush(WHITE);
     FillRect(hdc, &rect, brush);
